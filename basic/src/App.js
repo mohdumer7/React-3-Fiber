@@ -1,6 +1,10 @@
 import { useRef } from "react";
 import "./style.css";
-import { TransformControls, OrbitControls } from "@react-three/drei";
+import {
+  PivotControls,
+  TransformControls,
+  OrbitControls,
+} from "@react-three/drei";
 
 function App() {
   const cube = useRef();
@@ -13,10 +17,12 @@ function App() {
       <ambientLight intensity={0.5} />
 
       <group>
-        <mesh>
-          <boxGeometry />
-          <meshStandardMaterial color="mediumpurple" />
-        </mesh>
+        <PivotControls anchor={[0, 0, 0]} depthTest={false}>
+          <mesh position-x={2}>
+            <boxGeometry />
+            <meshStandardMaterial color="mediumpurple" />
+          </mesh>
+        </PivotControls>
 
         <mesh ref={cube} position-x={2}>
           <boxGeometry />
