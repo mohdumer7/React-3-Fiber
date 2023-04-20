@@ -1,18 +1,29 @@
 import { useRef } from "react";
 import "./style.css";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, extend, useThree } from "@react-three/fiber";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+
+extend({ OrbitControls });
 
 function App() {
   const cube = useRef();
+  const { camera, gl } = useThree();
+
   useFrame((state, delta) => {
     cube.current.rotation.y += delta;
   });
+
   return (
     <>
-      <group ref={cube}>
-        <mesh>
+      <orbitControls args={[camera, gl.domElement]} />
+
+      <directionalLight position={[1, 2, 3]} intensity={1.5} />
+      <ambientLight intensity={0.5} />
+
+      <group>
+        <mesh ref={cube}>
           <boxGeometry />
-          <meshBasicMaterial color="mediumpurple" />
+          <meshStandardMaterial color="mediumpurple" />
         </mesh>
         <mesh position-x={2}>
           <boxGeometry />
@@ -21,7 +32,7 @@ function App() {
       </group>
       <mesh scale={10} position-y={-1} rotation-x={-Math.PI * 0.5}>
         <planeGeometry />
-        <meshBasicMaterial color="greenyellow" />
+        <meshStandardMaterial color="greenyellow" />
       </mesh>
     </>
   );
