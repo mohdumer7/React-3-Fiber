@@ -1,13 +1,10 @@
 import "./style.css";
 import { OrbitControls } from "@react-three/drei";
-
 import { Perf } from "r3f-perf";
-import { useLoader } from "@react-three/fiber";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import Model from "./Model";
+import { Suspense } from "react";
 
 function App() {
-  const model = useLoader(GLTFLoader, "./FlightHelmet/glTF/FlightHelmet.gltf");
-  console.log(model);
   return (
     <>
       <Perf position="top-left" />
@@ -16,11 +13,20 @@ function App() {
       <directionalLight position={[1, 2, 3]} intensity={1.5} />
       <ambientLight intensity={0.5} />
 
-      <mesh position-x={2}>
+      {/* <mesh position-x={2}>
         <boxGeometry />
         <meshBasicMaterial color="mediumpurple" />
-      </mesh>
-      <primitive object={model.scene} scale={1.5} />
+      </mesh> */}
+      <Suspense
+        fallback={
+          <mesh position={0.5} scale={[2, 3, 2]}>
+            <boxGeometry args={[1, 1, 1, 2, 2, 2]} />
+            <meshBasicMaterial color="red" wireframe />
+          </mesh>
+        }
+      >
+        <Model />
+      </Suspense>
     </>
   );
 }
