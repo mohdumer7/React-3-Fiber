@@ -1,8 +1,26 @@
-import { useLoader } from "@react-three/fiber";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { useGLTF, Clone } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import { useRef } from "react";
 
 export default function Model() {
-  const model = useLoader(GLTFLoader, "./FlightHelmet/glTF/FlightHelmet.gltf");
+  const model = useGLTF("./hamburger.glb");
+  const test = useRef();
+  useFrame((_, delta) => {
+    test.current.rotation.y += delta;
+  });
   console.log(model);
-  return <primitive object={model.scene} scale={5} position-y={-1} />;
+
+  return (
+    <>
+      <Clone
+        object={model.scene}
+        ref={test}
+        scale={0.35}
+        position-z={-3}
+        position-y={-1}
+      />
+    </>
+  );
 }
+
+useGLTF.preload("./hamburger.glb");
