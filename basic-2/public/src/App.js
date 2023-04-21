@@ -39,12 +39,8 @@ function App() {
     }),
     choice: { options: ["a", "b", "c"] },
   });
-
-  
-
   return (
     <>
-
     <Perf position="top-left" />
       <OrbitControls makeDefault />
 

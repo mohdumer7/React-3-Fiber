@@ -9,15 +9,38 @@ import {
   Float,
   MeshReflectorMaterial,
   MeshDistortMaterial,
+  useHelper,
+  meshStandardMaterial,
+  softShadows,
+  BakeShadows,
+  Accumulativeshadows
 } from "@react-three/drei";
 
-import {Perf} from 'r3f-perf'
+import {useFrame} from "@react-three/fiber"
 
+import * as THREE from 'three';
+import {Perf} from 'r3f-perf';
 import { useControls, button } from "leva";
+
+// softShadows({
+//   frustum:3.75,
+//   size:0.005,
+//   near:9.5,
+//   samples:17,
+//   rings:11
+// })
 
 function App() {
   const cube = useRef();
   const cube1 = useRef();
+  const directionalLight = useRef()
+
+  useFrame((_,delta)=>{
+   
+  })
+
+  useHelper(directionalLight,THREE.DirectionalLightHelper,1)
+  
   const { position, positionxyz, color, visible } = useControls("Box", {
     position: { value: -2, min: -3, max: 3, step: 0.01 },
     positionxyz: {
@@ -39,17 +62,29 @@ function App() {
     }),
     choice: { options: ["a", "b", "c"] },
   });
-
-  
-
   return (
     <>
-
+    <BakeShadows/>
     <Perf position="top-left" />
       <OrbitControls makeDefault />
 
-      <directionalLight position={[1, 2, 3]} intensity={1.5} />
+      
+
+      <directionalLight ref={directionalLight} 
+        position={[1, 2, 3]} 
+        intensity={1.5} 
+        castShadow
+        shadow-mapSize={[1024,1024]}
+        // shadow-camera-near={1}
+        shadow-camera-far={10}
+        // shadow-camera-top = {2}
+        // shadow-camera-right ={2}
+        // shadow-camera-bottom={-2}
+        // shadow-camera-left={-2}
+      />
       <ambientLight intensity={0.5} />
+
+     
 
       <group>
         <PivotControls anchor={[0, 0, 0]} depthTest={false}>
@@ -57,39 +92,40 @@ function App() {
             position={[positionxyz.x, positionxyz.y, 0]}
             ref={cube1}
             visible={visible}
+            castShadow
           >
             <boxGeometry />
-            <meshStandardMaterial color={color} />
+            <MeshDistortMaterial color={color} />
             <Html
               position={[1, 1, 0]}
               wrapperClass="label"
               center
               distanceFactor={6}
               occlude={[cube, cube1]}
+              castShadow
             >
               cube
             </Html>
           </mesh>
         </PivotControls>
 
-        <mesh ref={cube} position-x={2}>
+        <mesh ref={cube} position-x={2}  >
           <boxGeometry />
           <meshBasicMaterial color="mediumpurple" />
         </mesh>
         <TransformControls object={cube} />
       </group>
-      <mesh scale={10} position-y={-1} rotation-x={-Math.PI * 0.5}>
+      <mesh scale={10} position-y={-1} rotation-x={-Math.PI * 0.5} receiveShadow >
         <planeGeometry />
         {/* <meshStandardMaterial color="greenyellow" />
          */}
         <Html>
           <div>Hello World</div>
         </Html>
-        <MeshReflectorMaterial
-          color={"red"}
+        <meshStandardMaterial
+          color={"limegreen"}
           resolution={512}
-          blur={(1000, 1000)}
-          mirror={0.5}
+         receiveShadow
         />
       </mesh>
       {/* <Html>
