@@ -5,7 +5,10 @@ import {
   TransformControls,
   OrbitControls,
   Html,
+  Lightformer,
   Text,
+  Environment,
+  Sky,
   Float,
   MeshReflectorMaterial,
   MeshDistortMaterial,
@@ -14,13 +17,13 @@ import {
   softShadows,
   BakeShadows,
   Accumulativeshadows,
-  ContactShadows
+  ContactShadows,
 } from "@react-three/drei";
 
-import {useFrame} from "@react-three/fiber"
+import { useFrame } from "@react-three/fiber";
 
-import * as THREE from 'three';
-import {Perf} from 'r3f-perf';
+import * as THREE from "three";
+import { Perf } from "r3f-perf";
 import { useControls, button } from "leva";
 
 // softShadows({
@@ -34,20 +37,32 @@ import { useControls, button } from "leva";
 function App() {
   const cube = useRef();
   const cube1 = useRef();
-  const directionalLight = useRef()
+  const directionalLight = useRef();
 
-  useFrame((_,delta)=>{
-   cube.current.rotation.y +=delta*0.2
-  })
+  useFrame((_, delta) => {
+    cube.current.rotation.y += delta * 0.2;
+  });
 
-  const {color1,opacity,blur} = useControls('contact shadows',{
-    color1:'#000000',
-    opacity:{value:0.5,min:0,max:1},
-    blur:{value:1,min:0,max:10}
-  })
+  const { sunPosition } = useControls("sky", {
+    sunPosition: { value: [1, 2, 3] },
+  });
+
+  const { envMapIntensity, envMapheight, envMapRadius, envMapScale } =
+    useControls("environment map", {
+      envMapIntensity: { value: 3.5, min: 0, max: 12 },
+      envMapheight: { value: 7, min: 0, max: 100 },
+      envMapRadius: { value: 20, min: 10, max: 1000 },
+      envMapScale: { value: 100, min: 10, max: 1000 },
+    });
+
+  const { color1, opacity, blur } = useControls("contact shadows", {
+    color1: "#000000",
+    opacity: { value: 0.5, min: 0, max: 1 },
+    blur: { value: 1, min: 0, max: 10 },
+  });
 
   // useHelper(directionalLight,THREE.DirectionalLightHelper,1)
-  
+
   const { position, positionxyz, color, visible } = useControls("Box", {
     position: { value: -2, min: -3, max: 3, step: 0.01 },
     positionxyz: {
@@ -69,23 +84,55 @@ function App() {
     }),
     choice: { options: ["a", "b", "c"] },
   });
+
   return (
     <>
-    <BakeShadows/>
-    <Perf position="top-left" />
+      <Environment
+        files={[
+          "./environmentMaps/2/px.jpg",
+          "./environmentMaps/2/nx.jpg",
+          "./environmentMaps/2/py.jpg",
+          "./environmentMaps/2/ny.jpg",
+          "./environmentMaps/2/pz.jpg",
+          "./environmentMaps/2/nz.jpg",
+        ]}
+        ground={{
+          height: envMapheight,
+          radius: envMapRadius,
+          scale: envMapScale,
+        }}
+      >
+        {/* <mesh position-z={-5} scale={10} >
+      <planeGeometry/>
+      <meshStandardMaterial color="red"/>
+      
+    </mesh> */}
+        <Lightformer
+          position-z={-5}
+          scale={10}
+          color="red"
+          form="ring"
+          intensity={10}
+        />
+        <Lightformer position-z={5} scale={10} color="blue" />
+      </Environment>
+
+      {/* <BakeShadows/> */}
+      <Perf position="top-left" />
       <OrbitControls makeDefault />
 
-      <ContactShadows 
-      position={[0,-0.99,0]} 
-      scale={10}
-      resolution={512} far={5} 
-      color={color1}
-      opacity={opacity}
-      blur={blur}
+      <ContactShadows
+        position={[0, -0, 0]}
+        scale={10}
+        resolution={512}
+        far={5}
+        color={color1}
+        opacity={opacity}
+        blur={blur}
       />
 
-      <directionalLight ref={directionalLight} 
-        position={[1, 2, 3]} 
+      {/* <directionalLight ref={directionalLight} 
+        position={sunPosition} 
         intensity={1.5} 
         castShadow
         shadow-mapSize={[1024,1024]}
@@ -95,21 +142,25 @@ function App() {
         // shadow-camera-right ={2}
         // shadow-camera-bottom={-2}
         // shadow-camera-left={-2}
-      />
-      <ambientLight intensity={0.5} />
+      /> */}
+      {/* <ambientLight intensity={0.5} /> */}
 
-     
+      {/* <Sky sunPosition={sunPosition} /> */}
 
       <group>
         <PivotControls anchor={[0, 0, 0]} depthTest={false}>
           <mesh
-            position={[positionxyz.x, positionxyz.y, 0]}
+            position={[positionxyz.x, 1, 0]}
             ref={cube1}
             visible={visible}
             castShadow
+            scale={1.5}
           >
             <boxGeometry />
-            <MeshDistortMaterial color={color} />
+            <MeshDistortMaterial
+              color={color}
+              envMapIntensity={envMapIntensity}
+            />
             <Html
               position={[1, 1, 0]}
               wrapperClass="label"
@@ -123,13 +174,21 @@ function App() {
           </mesh>
         </PivotControls>
 
-        <mesh ref={cube} position-x={2}  >
+        <mesh ref={cube} position-x={2} position-y={1} scale={1.5}>
           <boxGeometry />
-          <meshBasicMaterial color="mediumpurple" />
+          <MeshReflectorMaterial
+            color="mediumpurple"
+            envMapIntensity={envMapIntensity}
+          />
         </mesh>
         <TransformControls object={cube} />
       </group>
-      <mesh scale={10} position-y={-1} rotation-x={-Math.PI * 0.5} receiveShadow >
+      <mesh
+        scale={10}
+        position-y={-1}
+        rotation-x={-Math.PI * 0.5}
+        receiveShadow
+      >
         <planeGeometry />
         {/* <meshStandardMaterial color="greenyellow" />
          */}
@@ -139,7 +198,8 @@ function App() {
         <meshStandardMaterial
           color={"limegreen"}
           resolution={512}
-         receiveShadow
+          receiveShadow
+          envMapIntensity={envMapIntensity}
         />
       </mesh>
       {/* <Html>
