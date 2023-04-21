@@ -5,6 +5,10 @@ import {
   TransformControls,
   OrbitControls,
   Html,
+  Text,
+  Float,
+  MeshReflectorMaterial,
+  MeshDistortMaterial,
 } from "@react-three/drei";
 
 function App() {
@@ -43,14 +47,29 @@ function App() {
       </group>
       <mesh scale={10} position-y={-1} rotation-x={-Math.PI * 0.5}>
         <planeGeometry />
-        <meshStandardMaterial color="greenyellow" />
+        {/* <meshStandardMaterial color="greenyellow" />
+         */}
+        <Html>
+          <div>Hello World</div>
+        </Html>
+        <MeshReflectorMaterial
+          color={"red"}
+          resolution={512}
+          blur={(1000, 1000)}
+          mirror={0.5}
+        />
       </mesh>
-      <Html>
+      {/* <Html>
         umer
         <div
           style={{ height: "50px", width: "100px", backgroundColor: "white" }}
         ></div>
-      </Html>
+      </Html> */}
+      <Float speed={5}>
+        <Text scale-z={10} color={"salmon"}>
+          Am i even a Text?
+        </Text>
+      </Float>
     </>
   );
 }
