@@ -5,17 +5,45 @@ import {
   OrbitControls,
   useMatcapTexture,
 } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 
+import { useEffect, useRef } from "react";
+// import { useState } from "react";
+import * as THREE from "three";
 import "./style.css";
+
+const torusGeometry = new THREE.TorusGeometry(1, 0.6, 16, 32);
+const material = new THREE.MeshMatcapMaterial();
 
 function App() {
   const matcapTexture = useMatcapTexture("7B5254_E9DCC7_B19986_C8AC91", 256);
   // const tempArray = [...Array(100)];
+  // const [torusGeometry, setTorusGeometry] = useState();
+  // const [material, setMaterial] = useState();
+
+  const donutsGroup = useRef();
+
+  useEffect(() => {
+    matcapTexture.encoding = THREE.sRGBEncoding;
+    matcapTexture.needsUpdate = true;
+    material.matcap = matcapTexture[0];
+    material.needsUpdate = true;
+  });
+
+  useFrame((state, delta) => {
+    for (const donutr of donutsGroup.current.children) {
+      donutr.rotation.y += delta * 0.2;
+    }
+  });
 
   return (
     <>
       <Perf position="top-left" />
       <OrbitControls makeDefault />
+
+      {/* <torusGeometry ref={setTorusGeometry} args={[1, 0.6, 16, 32]} />
+      <meshMatcapMaterial ref={setMaterial} matcap={matcapTexture[0]} /> */}
+
       {/* 
       <mesh position-x={2}>
         <boxGeometry />
@@ -38,25 +66,26 @@ function App() {
         </Text3D>
       </Center>
 
-      {[...Array(100)].map((item, index) => (
-        <mesh
-          key={index}
-          position={[
-            (Math.random(index) - 0.5) * 15,
-            (Math.random(index) - 0.5) * 15,
-            (Math.random(index) - 0.5) * 10,
-          ]}
-          scale={0.2 * Math.random(index) + 0.2}
-          rotation={[
-            (Math.random(index) - 0.5) * Math.PI,
-            (Math.random(index) - 0.5) * Math.PI,
-            0,
-          ]}
-        >
-          <torusGeometry args={[1, 0.6, 16, 32]} />
-          <meshMatcapMaterial matcap={matcapTexture[0]} />
-        </mesh>
-      ))}
+      <group ref={donutsGroup}>
+        {[...Array(100)].map((item, index) => (
+          <mesh
+            key={index}
+            material={material}
+            geometry={torusGeometry}
+            position={[
+              (Math.random(index) - 0.5) * 15,
+              (Math.random(index) - 0.5) * 15,
+              (Math.random(index) - 0.5) * 10,
+            ]}
+            scale={0.2 * Math.random(index) + 0.2}
+            rotation={[
+              (Math.random(index) - 0.5) * Math.PI,
+              (Math.random(index) - 0.5) * Math.PI,
+              0,
+            ]}
+          />
+        ))}
+      </group>
     </>
   );
 }
