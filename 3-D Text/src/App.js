@@ -31,11 +31,7 @@ function App() {
     material.needsUpdate = true;
   });
 
-  useFrame((state, delta) => {
-    for (const donut of donuts.current) {
-      donut.rotation.y += delta * 0.2;
-    }
-  });
+  useFrame((state, delta) => {});
 
   return (
     <>
