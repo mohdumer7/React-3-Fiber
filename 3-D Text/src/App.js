@@ -20,8 +20,9 @@ function App() {
   // const tempArray = [...Array(100)];
   // const [torusGeometry, setTorusGeometry] = useState();
   // const [material, setMaterial] = useState();
+  // const donutsGroup = useRef();
 
-  const donutsGroup = useRef();
+  const donuts = useRef([]);
 
   useEffect(() => {
     matcapTexture.encoding = THREE.sRGBEncoding;
@@ -31,8 +32,8 @@ function App() {
   });
 
   useFrame((state, delta) => {
-    for (const donutr of donutsGroup.current.children) {
-      donutr.rotation.y += delta * 0.2;
+    for (const donut of donuts.current) {
+      donut.rotation.y += delta * 0.2;
     }
   });
 
@@ -66,26 +67,29 @@ function App() {
         </Text3D>
       </Center>
 
-      <group ref={donutsGroup}>
-        {[...Array(100)].map((item, index) => (
-          <mesh
-            key={index}
-            material={material}
-            geometry={torusGeometry}
-            position={[
-              (Math.random(index) - 0.5) * 15,
-              (Math.random(index) - 0.5) * 15,
-              (Math.random(index) - 0.5) * 10,
-            ]}
-            scale={0.2 * Math.random(index) + 0.2}
-            rotation={[
-              (Math.random(index) - 0.5) * Math.PI,
-              (Math.random(index) - 0.5) * Math.PI,
-              0,
-            ]}
-          />
-        ))}
-      </group>
+      {/* <group ref={donutsGroup}> */}
+      {[...Array(100)].map((item, index) => (
+        <mesh
+          ref={(ele) => {
+            donuts.current[index] = ele;
+          }}
+          key={index}
+          material={material}
+          geometry={torusGeometry}
+          position={[
+            (Math.random(index) - 0.5) * 15,
+            (Math.random(index) - 0.5) * 15,
+            (Math.random(index) - 0.5) * 10,
+          ]}
+          scale={0.2 * Math.random(index) + 0.2}
+          rotation={[
+            (Math.random(index) - 0.5) * Math.PI,
+            (Math.random(index) - 0.5) * Math.PI,
+            0,
+          ]}
+        />
+      ))}
+      {/* </group> */}
     </>
   );
 }
