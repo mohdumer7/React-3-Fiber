@@ -13,7 +13,7 @@ root.render(
   <React.StrictMode>
     <Leva />
 
-    <Canvas camera={{}} shadows >
+    <Canvas camera={{}} shadows= {false} >
      
       <color args={['ivory']} attach="background" />
       <App />

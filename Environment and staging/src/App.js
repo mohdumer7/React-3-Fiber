@@ -13,7 +13,8 @@ import {
   meshStandardMaterial,
   softShadows,
   BakeShadows,
-  Accumulativeshadows
+  Accumulativeshadows,
+  ContactShadows
 } from "@react-three/drei";
 
 import {useFrame} from "@react-three/fiber"
@@ -36,10 +37,16 @@ function App() {
   const directionalLight = useRef()
 
   useFrame((_,delta)=>{
-   
+   cube.current.rotation.y +=delta*0.2
   })
 
-  useHelper(directionalLight,THREE.DirectionalLightHelper,1)
+  const {color1,opacity,blur} = useControls('contact shadows',{
+    color1:'#000000',
+    opacity:{value:0.5,min:0,max:1},
+    blur:{value:1,min:0,max:10}
+  })
+
+  // useHelper(directionalLight,THREE.DirectionalLightHelper,1)
   
   const { position, positionxyz, color, visible } = useControls("Box", {
     position: { value: -2, min: -3, max: 3, step: 0.01 },
@@ -68,7 +75,14 @@ function App() {
     <Perf position="top-left" />
       <OrbitControls makeDefault />
 
-      
+      <ContactShadows 
+      position={[0,-0.99,0]} 
+      scale={10}
+      resolution={512} far={5} 
+      color={color1}
+      opacity={opacity}
+      blur={blur}
+      />
 
       <directionalLight ref={directionalLight} 
         position={[1, 2, 3]} 
