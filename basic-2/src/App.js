@@ -11,12 +11,37 @@ import {
   MeshDistortMaterial,
 } from "@react-three/drei";
 
+import {Perf} from 'r3f-perf'
+
+import { useControls, button } from "leva";
+
 function App() {
   const cube = useRef();
   const cube1 = useRef();
-
+  const { position, positionxyz, color, visible } = useControls("Box", {
+    position: { value: -2, min: -3, max: 3, step: 0.01 },
+    positionxyz: {
+      value: { x: -2, y: 0 },
+      min: -3,
+      max: 3,
+      step: 0.01,
+      joystick: "invertY",
+    },
+    color: "#000000",
+    visible: true,
+    myInterval: {
+      min: 0,
+      max: 10,
+      value: [4, 9],
+    },
+    clickMe: button(() => {
+      console.log("ok");
+    }),
+    choice: { options: ["a", "b", "c"] },
+  });
   return (
     <>
+    <Perf position="top-left" />
       <OrbitControls makeDefault />
 
       <directionalLight position={[1, 2, 3]} intensity={1.5} />
@@ -24,9 +49,13 @@ function App() {
 
       <group>
         <PivotControls anchor={[0, 0, 0]} depthTest={false}>
-          <mesh position-x={2} ref={cube1}>
+          <mesh
+            position={[positionxyz.x, positionxyz.y, 0]}
+            ref={cube1}
+            visible={visible}
+          >
             <boxGeometry />
-            <meshStandardMaterial color="mediumpurple" />
+            <meshStandardMaterial color={color} />
             <Html
               position={[1, 1, 0]}
               wrapperClass="label"
