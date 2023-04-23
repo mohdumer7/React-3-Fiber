@@ -65,6 +65,7 @@ function App() {
     <>
       <color args={["#000"]} attach="background" />
       <Perf position="top-left" />
+
       <EffectComposer>
         <Vignette
           offset={0.3}
@@ -72,9 +73,12 @@ function App() {
           blendFunction={BlendFunction.NORMAL}
           mode={GlitchMode.CONSTANT_MILD}
         />
+
         <Glitch delay={[0.5, 1]} duration={[0.1, 0.3]} strength={[0.2, 0.4]} />
+
         <Noise blendFunction={BlendFunction.SOFT_LIGHT} />
-        <Bloom />
+
+        <Bloom mipmapBlur />
       </EffectComposer>
 
       <OrbitControls makeDefault />
@@ -113,6 +117,22 @@ function App() {
         >
           <boxGeometry />
           <meshBasicMaterial color={[1.5, 1, 10]} toneMapped={false} />
+        </mesh>
+
+        <mesh
+          ref={cube}
+          position-z={-2}
+          // onClick={eventHandler}
+          // onPointerEnter={() => (document.body.style.cursor = "pointer")}
+          // onPointerLeave={() => (document.body.style.cursor = "default")}
+        >
+          <boxGeometry />
+          <meshStandardMaterial
+            color="orange"
+            emissive="orange"
+            emissiveIntensity={2}
+            toneMapped={false}
+          />
         </mesh>
       </group>
 
