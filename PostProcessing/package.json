@@ -5,10 +5,12 @@
   "dependencies": {
     "@react-three/drei": "9.32",
     "@react-three/fiber": "8.8",
+    "@react-three/postprocessing": "2.6",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "leva": "^0.9.34",
+    "postprocessing": "6.28",
     "r3f-perf": "6.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

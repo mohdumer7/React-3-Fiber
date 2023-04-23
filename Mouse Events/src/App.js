@@ -14,18 +14,19 @@ import {
   Stage,
 } from "@react-three/drei";
 
-import { Perf } from "r3f-perf";
+import { EffectComposer, Vignette } from "@react-three/postprocessing";
 
+import { BlendFunction } from "postprocessing";
+
+import { Perf } from "r3f-perf";
 import { useControls, button } from "leva";
 
 function App() {
   const cube = useRef();
   const cube1 = useRef();
   const loader = useGLTF("./hamburger.glb");
-  console.log(loader);
 
   const eventHandler = (event) => {
-    console.log(event.x);
     event.stopPropagation();
     cube.current.material.color.set(`hsl(${Math.random() * 360},100%,75%)`);
   };
@@ -50,14 +51,19 @@ function App() {
       max: 10,
       value: [4, 9],
     },
-    clickMe: button(() => {
-      console.log("ok");
-    }),
+    clickMe: button(() => {}),
     choice: { options: ["a", "b", "c"] },
   });
 
   return (
     <>
+      <EffectComposer>
+        <Vignette
+          offset={3}
+          darkness={5}
+          BlendFunction={BlendFunction.COLOR_BURN}
+        />
+      </EffectComposer>
       <Perf position="top-left" />
       <OrbitControls makeDefault />
 
@@ -136,7 +142,6 @@ function App() {
         position-y={0.5}
         onClick={(e) => {
           e.stopPropagation();
-          console.log(e);
         }}
       />
     </>

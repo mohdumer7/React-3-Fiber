@@ -14,18 +14,25 @@ import {
   Stage,
 } from "@react-three/drei";
 
-import { Perf } from "r3f-perf";
+import {
+  Bloom,
+  EffectComposer,
+  Glitch,
+  Noise,
+  Vignette,
+} from "@react-three/postprocessing";
 
+import { GlitchMode, BlendFunction } from "postprocessing";
+
+import { Perf } from "r3f-perf";
 import { useControls, button } from "leva";
 
 function App() {
   const cube = useRef();
   const cube1 = useRef();
   const loader = useGLTF("./hamburger.glb");
-  console.log(loader);
 
   const eventHandler = (event) => {
-    console.log(event.x);
     event.stopPropagation();
     cube.current.material.color.set(`hsl(${Math.random() * 360},100%,75%)`);
   };
@@ -50,15 +57,26 @@ function App() {
       max: 10,
       value: [4, 9],
     },
-    clickMe: button(() => {
-      console.log("ok");
-    }),
+    clickMe: button(() => {}),
     choice: { options: ["a", "b", "c"] },
   });
 
   return (
     <>
+      <color args={["#000"]} attach="background" />
       <Perf position="top-left" />
+      <EffectComposer>
+        <Vignette
+          offset={0.3}
+          darkness={0.9}
+          blendFunction={BlendFunction.NORMAL}
+          mode={GlitchMode.CONSTANT_MILD}
+        />
+        <Glitch delay={[0.5, 1]} duration={[0.1, 0.3]} strength={[0.2, 0.4]} />
+        <Noise blendFunction={BlendFunction.SOFT_LIGHT} />
+        <Bloom />
+      </EffectComposer>
+
       <OrbitControls makeDefault />
 
       <directionalLight position={[1, 2, 3]} intensity={1.5} />
@@ -89,12 +107,12 @@ function App() {
         <mesh
           ref={cube}
           position-x={2}
-          onClick={eventHandler}
-          onPointerEnter={() => (document.body.style.cursor = "pointer")}
-          onPointerLeave={() => (document.body.style.cursor = "default")}
+          // onClick={eventHandler}
+          // onPointerEnter={() => (document.body.style.cursor = "pointer")}
+          // onPointerLeave={() => (document.body.style.cursor = "default")}
         >
           <boxGeometry />
-          <meshBasicMaterial color="mediumpurple" />
+          <meshBasicMaterial color={[1.5, 1, 10]} toneMapped={false} />
         </mesh>
       </group>
 
@@ -136,7 +154,6 @@ function App() {
         position-y={0.5}
         onClick={(e) => {
           e.stopPropagation();
-          console.log(e);
         }}
       />
     </>
