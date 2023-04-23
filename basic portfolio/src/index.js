@@ -13,5 +13,8 @@ root.render(
     <Canvas camera={{}}>
       <App />
     </Canvas>
+    <div className="desclaimer">
+      <p>Scroll inside the Screen to use the website</p>
+    </div>
   </React.StrictMode>
 );
