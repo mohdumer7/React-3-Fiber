@@ -20,6 +20,7 @@ import {
   Glitch,
   Noise,
   Vignette,
+  DepthOfField,
 } from "@react-three/postprocessing";
 
 import { GlitchMode, BlendFunction } from "postprocessing";
@@ -79,6 +80,8 @@ function App() {
         <Noise blendFunction={BlendFunction.SOFT_LIGHT} />
 
         <Bloom mipmapBlur />
+
+        <DepthOfField />
       </EffectComposer>
 
       <OrbitControls makeDefault />
@@ -134,6 +137,11 @@ function App() {
             toneMapped={false}
           />
         </mesh>
+
+        <mesh ref={cube} position-z={2} position-x={2}>
+          <boxGeometry />
+          <meshStandardMaterial color="mediumpurple" />
+        </mesh>
       </group>
 
       <mesh
@@ -145,9 +153,7 @@ function App() {
         <planeGeometry />
         {/* <meshStandardMaterial color="greenyellow" />
          */}
-        <Html className="text">
-          <div>Click on this Cube to Change Color ----</div>
-        </Html>
+
         <MeshReflectorMaterial
           color={"red"}
           resolution={512}
