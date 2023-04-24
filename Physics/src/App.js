@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./style.css";
 import {
   PivotControls,
@@ -9,9 +9,16 @@ import {
   Float,
   MeshReflectorMaterial,
   MeshDistortMaterial,
+  useGLTF,
 } from "@react-three/drei";
 
-import { CuboidCollider, Physics, RigidBody, Debug } from "@react-three/rapier";
+import {
+  CuboidCollider,
+  Physics,
+  RigidBody,
+  Debug,
+  CylinderCollider,
+} from "@react-three/rapier";
 
 import { Perf } from "r3f-perf";
 import { useControls, button } from "leva";
@@ -24,6 +31,9 @@ function App() {
   const cube = useRef();
   const cube1 = useRef();
   const twister = useRef();
+  const burger = useGLTF("./hamburger.glb");
+  const cubeCount = 3;
+  const cubes = useRef();
 
   const { position, positionxyz, color, visible } = useControls("Box", {
     position: { value: -2, min: -3, max: 3, step: 0.01 },
@@ -78,6 +88,13 @@ function App() {
   const collisionExit = () => {
     // console.log("aah")
   };
+
+  useEffect(() => {
+    for (let i = 0; i < cubeCount; i++) {
+      const matrix = new THREE.Matrix4();
+      cubes.current.setMatrixAt(i, matrix);
+    }
+  }, []);
 
   return (
     <>
@@ -167,6 +184,23 @@ function App() {
             <meshStandardMaterial color={"red"} />
           </mesh>
         </RigidBody>
+
+        <RigidBody colliders={false} position={[0, 4, 0]}>
+          <primitive object={burger.scene} scale={0.25} />
+          <CylinderCollider args={[0.5, 1.25]} position={[0, 0.7, 0]} />
+        </RigidBody>
+
+        <RigidBody type="fixed">
+          <CuboidCollider args={[7.5, 3, 0.5]} position={[0, 1, 5.25]} />
+          <CuboidCollider args={[7.5, 3, 0.5]} position={[0, 1, -5.25]} />
+          <CuboidCollider args={[0.5, 3, 7.5]} position={[5.25, 1, 0]} />
+          <CuboidCollider args={[0.5, 3, 7.5]} position={[-5.25, 1, 0]} />
+        </RigidBody>
+
+        <instancedMesh ref={cubes} args={[null, null, cubeCount]}>
+          <boxGeometry />
+          <meshStandardMaterial color="tomato" />
+        </instancedMesh>
       </Physics>
     </>
   );
