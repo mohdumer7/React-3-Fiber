@@ -73,8 +73,8 @@ function App() {
     twister.current.setNextKinematicRotation(quaternionRotation);
 
     const angle = time * 3;
-    const x = Math.cos(angle + 10);
-    const z = Math.sin(angle + 10);
+    const x = Math.cos(angle) * 5;
+    const z = Math.sin(angle) * 5;
 
     twister.current.setNextKinematicTranslation({ x: x, y: -0.55, z: z });
   });
@@ -126,7 +126,8 @@ function App() {
       <ambientLight intensity={0.5} />
 
       <Physics gravity={[0, -9.8, 0]}>
-        {/* <Debug /> //This is Performance Heavy */}
+        {/* //This is Performance Heavy */}
+        <Debug />
         <RigidBody
           ref={cube1}
           gravityScale={1}
@@ -210,10 +211,10 @@ function App() {
         </RigidBody>
 
         <RigidBody type="fixed">
-          <CuboidCollider args={[7.5, 3, 0.5]} position={[0, 1, 5.25]} />
-          <CuboidCollider args={[7.5, 3, 0.5]} position={[0, 1, -5.25]} />
-          <CuboidCollider args={[0.5, 3, 7.5]} position={[5.25, 1, 0]} />
-          <CuboidCollider args={[0.5, 3, 7.5]} position={[-5.25, 1, 0]} />
+          <CuboidCollider args={[8, 3, 0.5]} position={[0, 1, 7]} />
+          <CuboidCollider args={[8, 3, 0.5]} position={[0, 1, -7]} />
+          <CuboidCollider args={[0.5, 3, 8]} position={[7, 1, 0]} />
+          <CuboidCollider args={[0.5, 3, 8]} position={[-7, 1, 0]} />
         </RigidBody>
 
         <InstancedRigidBodies
