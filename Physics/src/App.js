@@ -33,7 +33,7 @@ function App() {
   const cube1 = useRef();
   const twister = useRef();
   const burger = useGLTF("./hamburger.glb");
-  const cubeCount = 100;
+  const cubeCount = 300;
   const cubes = useRef();
 
   const { position, positionxyz, color, visible } = useControls("Box", {
@@ -52,16 +52,13 @@ function App() {
       max: 10,
       value: [4, 9],
     },
-    clickMe: button(() => {
-      console.log("ok");
-    }),
+    clickMe: button(() => {}),
     choice: { options: ["a", "b", "c"] },
   });
 
   const cubeJump = () => {
     cube1.current.applyImpulse({ x: 0, y: 5, z: 0 });
     cube1.current.applyTorqueImpulse({ x: 0, y: 1, z: 0 });
-    console.log(cube1.current.rotation());
   };
 
   useFrame((state, delta) => {
@@ -159,9 +156,7 @@ function App() {
           position={[0, 5, 0]}
           onCollisionEnter={collisionEnter}
           onCollisionExit={collisionExit}
-          onSleep={() => {
-            console.log("slept");
-          }}
+          onSleep={() => {}}
         >
           <mesh castShadow>
             <sphereGeometry />
