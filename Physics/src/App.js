@@ -18,6 +18,7 @@ import {
   RigidBody,
   Debug,
   CylinderCollider,
+  InstancedRigidBodies,
 } from "@react-three/rapier";
 
 import { Perf } from "r3f-perf";
@@ -89,12 +90,17 @@ function App() {
     // console.log("aah")
   };
 
-  useEffect(() => {
-    for (let i = 0; i < cubeCount; i++) {
-      const matrix = new THREE.Matrix4();
-      cubes.current.setMatrixAt(i, matrix);
-    }
-  }, []);
+  // useEffect(() => {
+  //   for (let i = 0; i < cubeCount; i++) {
+  //     const matrix = new THREE.Matrix4();
+  //     matrix.compose(
+  //       new THREE.Vector3(i * 2, 0, 0),
+  //       new THREE.Quaternion(),
+  //       new THREE.Vector3(1, 1, 1)
+  //     );
+  //     cubes.current.setMatrixAt(i, matrix);
+  //   }
+  // }, []);
 
   return (
     <>
@@ -197,10 +203,12 @@ function App() {
           <CuboidCollider args={[0.5, 3, 7.5]} position={[-5.25, 1, 0]} />
         </RigidBody>
 
-        <instancedMesh ref={cubes} args={[null, null, cubeCount]}>
-          <boxGeometry />
-          <meshStandardMaterial color="tomato" />
-        </instancedMesh>
+        <InstancedRigidBodies>
+          <instancedMesh castShadow ref={cubes} args={[null, null, cubeCount]}>
+            <boxGeometry />
+            <meshStandardMaterial color="tomato" />
+          </instancedMesh>
+        </InstancedRigidBodies>
       </Physics>
     </>
   );
