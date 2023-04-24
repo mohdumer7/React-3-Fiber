@@ -129,7 +129,7 @@ function App() {
       <ambientLight intensity={0.5} />
 
       <Physics gravity={[0, -9.8, 0]}>
-        <Debug />
+        {/* <Debug /> //This is Performance Heavy */}
         <RigidBody
           ref={cube1}
           gravityScale={1}
