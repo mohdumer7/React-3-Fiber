@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./style.css";
 import {
   PivotControls,
@@ -33,7 +33,7 @@ function App() {
   const cube1 = useRef();
   const twister = useRef();
   const burger = useGLTF("./hamburger.glb");
-  const cubeCount = 3;
+  const cubeCount = 100;
   const cubes = useRef();
 
   const { position, positionxyz, color, visible } = useControls("Box", {
@@ -101,6 +101,24 @@ function App() {
   //     cubes.current.setMatrixAt(i, matrix);
   //   }
   // }, []);
+
+  const cubeTransforms = useMemo(() => {
+    const positions = [];
+    const rotations = [];
+    const scales = [];
+
+    for (let i = 0; i < cubeCount; i++) {
+      positions.push([
+        (Math.random() - 0.5) * 8,
+        6 + i * 0.2,
+        (Math.random() - 0.5) * 8,
+      ]);
+      rotations.push([Math.random(), Math.random(), Math.random()]);
+      const scale = 0.2 + Math.random() * 0.8;
+      scales.push([scale, scale, scale]);
+    }
+    return { positions, rotations, scales };
+  }, []);
 
   return (
     <>
@@ -203,7 +221,11 @@ function App() {
           <CuboidCollider args={[0.5, 3, 7.5]} position={[-5.25, 1, 0]} />
         </RigidBody>
 
-        <InstancedRigidBodies>
+        <InstancedRigidBodies
+          positions={cubeTransforms.positions}
+          rotations={cubeTransforms.rotations}
+          scales={cubeTransforms.scales}
+        >
           <instancedMesh castShadow ref={cubes} args={[null, null, cubeCount]}>
             <boxGeometry />
             <meshStandardMaterial color="tomato" />
