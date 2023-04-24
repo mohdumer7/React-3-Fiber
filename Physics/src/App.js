@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import "./style.css";
 import {
   PivotControls,
@@ -19,10 +19,12 @@ import { useFrame } from "@react-three/fiber";
 
 import * as THREE from "three";
 import { Euler, Quaternion } from "three";
+
 function App() {
   const cube = useRef();
   const cube1 = useRef();
   const twister = useRef();
+
   const { position, positionxyz, color, visible } = useControls("Box", {
     position: { value: -2, min: -3, max: 3, step: 0.01 },
     positionxyz: {
@@ -65,11 +67,17 @@ function App() {
     const angle = time * 3;
     const x = Math.cos(angle + 10);
     const z = Math.sin(angle + 10);
-    console.log(twister.current);
+
     twister.current.setNextKinematicTranslation({ x: x, y: -0.55, z: z });
   });
 
-  const collisionEnter = () => {};
+  const collisionEnter = () => {
+    // console.log("ouch");
+  };
+
+  const collisionExit = () => {
+    // console.log("aah")
+  };
 
   return (
     <>
@@ -87,7 +95,7 @@ function App() {
           restitution={0.5}
           friction={0}
           colliders={false}
-          position={[-4, 2, 0]}
+          position={[-2, 2, 0]}
         >
           <mesh position-y={2} castShadow onClick={cubeJump}>
             <boxGeometry />
@@ -105,7 +113,15 @@ function App() {
           <meshBasicMaterial color="mediumpurple" />
         </mesh>
 
-        <RigidBody colliders="ball" position={[0, 5, 0]}>
+        <RigidBody
+          colliders="ball"
+          position={[0, 5, 0]}
+          onCollisionEnter={collisionEnter}
+          onCollisionExit={collisionExit}
+          onSleep={() => {
+            console.log("slept");
+          }}
+        >
           <mesh castShadow>
             <sphereGeometry />
             <meshStandardMaterial color={"red"} />
