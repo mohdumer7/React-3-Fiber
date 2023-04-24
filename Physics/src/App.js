@@ -11,14 +11,18 @@ import {
   MeshDistortMaterial,
 } from "@react-three/drei";
 
-import { Physics, RigidBody, Debug } from "@react-three/rapier";
+import { CuboidCollider, Physics, RigidBody, Debug } from "@react-three/rapier";
 
 import { Perf } from "r3f-perf";
 import { useControls, button } from "leva";
+import { useFrame } from "@react-three/fiber";
 
+import * as THREE from "three";
+import { Euler, Quaternion } from "three";
 function App() {
   const cube = useRef();
   const cube1 = useRef();
+  const twister = useRef();
   const { position, positionxyz, color, visible } = useControls("Box", {
     position: { value: -2, min: -3, max: 3, step: 0.01 },
     positionxyz: {
@@ -41,6 +45,32 @@ function App() {
     choice: { options: ["a", "b", "c"] },
   });
 
+  const cubeJump = () => {
+    cube1.current.applyImpulse({ x: 0, y: 5, z: 0 });
+    cube1.current.applyTorqueImpulse({ x: 0, y: 1, z: 0 });
+    console.log(cube1.current.rotation());
+  };
+
+  useFrame((state, delta) => {
+    const time = state.clock.getElapsedTime();
+
+    // twister.current.setNextKinematicRotation(
+    //   new Quaternion().setFromEuler(euler)
+    // );
+    const eulerRotation = new THREE.Euler(0, time * 10, 0);
+    const quaternionRotation = new THREE.Quaternion();
+    quaternionRotation.setFromEuler(eulerRotation);
+    twister.current.setNextKinematicRotation(quaternionRotation);
+
+    const angle = time * 3;
+    const x = Math.cos(angle + 10);
+    const z = Math.sin(angle + 10);
+    console.log(twister.current);
+    twister.current.setNextKinematicTranslation({ x: x, y: -0.55, z: z });
+  });
+
+  const collisionEnter = () => {};
+
   return (
     <>
       <Perf position="top-left" />
@@ -49,18 +79,25 @@ function App() {
       <directionalLight position={[1, 2, 3]} intensity={1.5} castShadow />
       <ambientLight intensity={0.5} />
 
-      <Physics>
-        {/* <Debug /> */}
-        <RigidBody>
-          <mesh
-            position={[positionxyz.x, positionxyz.y, 0]}
-            ref={cube1}
-            position-y={2}
-            castShadow
-          >
+      <Physics gravity={[0, -9.8, 0]}>
+        <Debug />
+        <RigidBody
+          ref={cube1}
+          gravityScale={1}
+          restitution={0.5}
+          friction={0}
+          colliders={false}
+          position={[-4, 2, 0]}
+        >
+          <mesh position-y={2} castShadow onClick={cubeJump}>
             <boxGeometry />
             <meshStandardMaterial color={color} />
           </mesh>
+          <CuboidCollider
+            args={[0.5, 0.5, 0.5]}
+            position={[0, 2, 0]}
+            mass={2}
+          />
         </RigidBody>
 
         <mesh ref={cube} position-x={2} position-y={3} castShadow>
@@ -68,7 +105,25 @@ function App() {
           <meshBasicMaterial color="mediumpurple" />
         </mesh>
 
-        <RigidBody type="fixed">
+        <RigidBody colliders="ball" position={[0, 5, 0]}>
+          <mesh castShadow>
+            <sphereGeometry />
+            <meshStandardMaterial color={"red"} />
+          </mesh>
+        </RigidBody>
+
+        <RigidBody colliders={false}>
+          <mesh
+            castShadow
+            position={[0, 1, 0]}
+            rotation={[Math.PI * 0.5, 0, 0]}
+          >
+            <torusGeometry args={[1, 0.5, 16, 32]} />
+            <meshStandardMaterial color={"grey"} />
+          </mesh>
+        </RigidBody>
+
+        <RigidBody type="fixed" friction={0.7}>
           <mesh
             position-y={-1}
             rotation-x={-Math.PI * 0.5}
@@ -82,6 +137,18 @@ function App() {
               blur={(1000, 1000)}
               mirror={0.5}
             />
+          </mesh>
+        </RigidBody>
+
+        <RigidBody
+          friction={0}
+          type="kinematicPosition"
+          ref={twister}
+          position={[0, -0.55, 0]}
+        >
+          <mesh castShadow scale={[0.4, 0.4, 3]}>
+            <boxGeometry />
+            <meshStandardMaterial color={"red"} />
           </mesh>
         </RigidBody>
       </Physics>
